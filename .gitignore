@@ -1,0 +1,15 @@
+venv/
+__pycache__/
+*.pyc
+
+dataset/processed/
+dataset/processed_segmented/
+dataset/segmented/
+
+*.pkl
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
