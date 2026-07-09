@@ -1,0 +1,80 @@
+{% extends "predictor/base.html" %}
+{% load static %}
+
+{% block title %}About — VoxAnimal.ai{% endblock %}
+{% block nav_about %}active{% endblock %}
+
+{% block content %}
+<section class="hero fade-up">
+  <div class="row align-items-center g-4">
+    <div class="col-lg-8">
+      <span class="chip mb-3"><i class="bi bi-info-circle"></i> About</span>
+      <h1 class="mb-2">Teaching machines to listen to nature.</h1>
+      <p class="lead mb-0">VoxAnimal.ai is a research-grade AI system that recognizes animals from short audio recordings. We're on a mission to make bioacoustics accessible to everyone.</p>
+    </div>
+    <div class="col-lg-4 text-center">
+      <i class="bi bi-globe-americas floaty" style="font-size:9rem; color:#fff; opacity:.9;"></i>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 pt-3">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-cpu"></i></div>
+        <h5 class="fw-semibold">The Model</h5>
+        <p class="muted mb-0">A deep convolutional network trained on tens of thousands of labeled audio clips across 120+ species, using mel-spectrogram representations for high accuracy.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-mic"></i></div>
+        <h5 class="fw-semibold">The Pipeline</h5>
+        <p class="muted mb-0">Uploaded audio is resampled, denoised, and converted to a spectrogram. The model outputs a probability distribution across all supported species.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-tree"></i></div>
+        <h5 class="fw-semibold">The Mission</h5>
+        <p class="muted mb-0">Support conservationists, researchers, and hobbyists with accessible tools for identifying wildlife by sound alone.</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-shield-lock"></i></div>
+        <h5 class="fw-semibold">Privacy</h5>
+        <p class="muted mb-0">Your uploads are stored securely and used only to deliver predictions and improve model quality with your consent.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 pt-3">
+  <div class="glass p-4 p-lg-5">
+    <h3 class="section-title mb-4 text-center">How it works</h3>
+    <div class="row g-4">
+      <div class="col-md-4 text-center">
+        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-1-circle fs-3"></i></div>
+        <h6 class="fw-semibold">Upload audio</h6>
+        <p class="muted small mb-0">Drag & drop or select an MP3, WAV, OGG, or M4A file.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-2-circle fs-3"></i></div>
+        <h6 class="fw-semibold">AI analysis</h6>
+        <p class="muted small mb-0">Our model converts sound into features and predicts the species.</p>
+      </div>
+      <div class="col-md-4 text-center">
+        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-3-circle fs-3"></i></div>
+        <h6 class="fw-semibold">Get results</h6>
+        <p class="muted small mb-0">See the animal name, confidence, and top alternatives.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 pt-3 text-center">
+  <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-cloud-arrow-up me-2"></i>Try VoxAnimal now</a>
+</section>
+{% endblock %}

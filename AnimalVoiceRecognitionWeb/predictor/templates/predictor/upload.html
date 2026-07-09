@@ -1,0 +1,106 @@
+{% extends "predictor/base.html" %}
+{% load static %}
+
+{% block title %}Upload Audio — VoxAnimal.ai{% endblock %}
+{% block nav_upload %}active{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center fade-up">
+  <div class="col-lg-9">
+    <div class="text-center mb-4">
+      <span class="chip mb-3" style="background: var(--brand-50); color: var(--brand-700); border-color: var(--brand-100);">
+        <i class="bi bi-cloud-arrow-up"></i> Upload
+      </span>
+      <h1 class="section-title">Drop your audio, get the animal</h1>
+      <p class="muted">Supported formats: MP3, WAV, OGG, M4A · Max 20MB</p>
+    </div>
+
+    <div class="glass p-4 p-lg-5">
+      <form method="POST" action="{% url 'upload' %}" enctype="multipart/form-data" id="uploadForm">
+        {% csrf_token %}
+
+        <label for="audioInput" id="dropZone"
+          class="d-flex flex-column align-items-center justify-content-center text-center p-5"
+          style="border: 2px dashed var(--brand-300); border-radius: var(--radius-lg);
+                 background: rgba(239,246,255,0.6); cursor: pointer; transition: all .25s ease; min-height: 260px;">
+          <div class="brand-logo mb-3" style="width:64px; height:64px; border-radius:18px;">
+            <i class="bi bi-cloud-arrow-up-fill" style="font-size: 1.8rem;"></i>
+          </div>
+          <h5 class="fw-semibold mb-1">Drag & drop your audio file here</h5>
+          <p class="muted mb-3">or click to browse from your computer</p>
+          <span class="btn btn-outline-brand btn-sm"><i class="bi bi-folder2-open me-1"></i> Choose file</span>
+          <input type="file" name="audio" id="audioInput" accept="audio/*" hidden />
+        </label>
+
+        <div id="preview" class="mt-4 d-none">
+          <div class="glass p-3 d-flex align-items-center gap-3" style="background: #fff;">
+            <div class="brand-logo" style="min-width:44px;"><i class="bi bi-file-earmark-music-fill"></i></div>
+            <div class="grow min-w-0">
+              <div class="fw-semibold text-truncate" id="fileName">—</div>
+              <small class="muted" id="fileMeta">—</small>
+              <audio controls class="w-100 mt-2" id="audioPlayer"></audio>
+            </div>
+            <button type="button" class="btn btn-outline-brand btn-sm" id="clearBtn" title="Remove">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="d-flex flex-wrap gap-3 mt-4 justify-content-end">
+          <a href="{% url 'home' %}" class="btn btn-outline-brand"><i class="bi bi-arrow-left me-1"></i>Cancel</a>
+          <button type="submit" class="btn btn-brand" id="submitBtn" disabled>
+            <i class="bi bi-magic me-1"></i> Recognize Animal
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="row g-3 mt-4">
+      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-shield-lock text-primary fs-4"></i><small class="muted mb-0">Your files are processed securely and never shared.</small></div></div>
+      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-lightning text-primary fs-4"></i><small class="muted mb-0">Predictions delivered in under two seconds.</small></div></div>
+      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-graph-up text-primary fs-4"></i><small class="muted mb-0">Get top-3 species with confidence scores.</small></div></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+  const dz = document.getElementById('dropZone');
+  const input = document.getElementById('audioInput');
+  const preview = document.getElementById('preview');
+  const fileName = document.getElementById('fileName');
+  const fileMeta = document.getElementById('fileMeta');
+  const audioPlayer = document.getElementById('audioPlayer');
+  const submitBtn = document.getElementById('submitBtn');
+  const clearBtn = document.getElementById('clearBtn');
+
+  function formatSize(bytes){
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
+    return (bytes/1048576).toFixed(2) + ' MB';
+  }
+  function setFile(file){
+    if(!file) return;
+    fileName.textContent = file.name;
+    fileMeta.textContent = file.type + ' · ' + formatSize(file.size);
+    audioPlayer.src = URL.createObjectURL(file);
+    preview.classList.remove('d-none');
+    submitBtn.disabled = false;
+  }
+  input.addEventListener('change', e => setFile(e.target.files[0]));
+  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.style.background = 'rgba(219,234,254,0.9)'; dz.style.borderColor = 'var(--brand-500)';
+  }));
+  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
+    e.preventDefault(); dz.style.background = 'rgba(239,246,255,0.6)'; dz.style.borderColor = 'var(--brand-300)';
+  }));
+  dz.addEventListener('drop', e => {
+    const f = e.dataTransfer.files[0];
+    if(f){ input.files = e.dataTransfer.files; setFile(f); }
+  });
+  clearBtn.addEventListener('click', () => {
+    input.value = ''; preview.classList.add('d-none'); submitBtn.disabled = true;
+  });
+</script>
+{% endblock %}

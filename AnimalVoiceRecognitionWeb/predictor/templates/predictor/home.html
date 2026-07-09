@@ -1,0 +1,72 @@
+{% extends "predictor/base.html" %}
+{% load static %}
+
+{% block title %}VoxAnimal.ai — AI Animal Voice Recognition{% endblock %}
+{% block nav_home %}active{% endblock %}
+
+{% block content %}
+<section class="hero fade-up">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-7">
+      <span class="chip mb-3"><i class="bi bi-stars"></i> Powered by Deep Learning</span>
+      <h1 class="mb-3">Hear an animal.<br/>Know the species — instantly.</h1>
+      <p class="lead mb-4">VoxAnimal.ai analyzes audio recordings and identifies animals with confidence scores you can trust. Upload a clip and let our neural network do the rest.</p>
+      <div class="d-flex flex-wrap gap-3">
+        <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-cloud-arrow-up me-2"></i>Upload Audio</a>
+        <a href="{% url 'about' %}" class="btn btn-outline-brand"><i class="bi bi-info-circle me-2"></i>How it works</a>
+      </div>
+      <div class="d-flex flex-wrap gap-4 mt-5">
+        <div><div class="fw-bold fs-4">98.4%</div><small style="opacity:.85">Top-1 accuracy</small></div>
+        <div><div class="fw-bold fs-4">120+</div><small style="opacity:.85">Species covered</small></div>
+        <div><div class="fw-bold fs-4">&lt; 2s</div><small style="opacity:.85">Avg. inference time</small></div>
+      </div>
+    </div>
+    <div class="col-lg-5 text-center">
+      <div class="floaty d-inline-flex align-items-center justify-content-center"
+           style="width: 320px; height: 320px; border-radius: 50%;
+                  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.05));
+                  border: 1px solid rgba(255,255,255,0.35); backdrop-filter: blur(10px);">
+        <i class="bi bi-soundwave" style="font-size: 8rem; color: #fff; opacity: .95;"></i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 pt-4">
+  <div class="text-center mb-5">
+    <h2 class="section-title">Built for accuracy, designed for you</h2>
+    <p class="muted">Every detail crafted to make animal voice recognition feel effortless.</p>
+  </div>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-lightning-charge-fill"></i></div>
+        <h5 class="fw-semibold">Real-time inference</h5>
+        <p class="muted mb-0">Get predictions in under two seconds with our optimized ML pipeline.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-shield-check"></i></div>
+        <h5 class="fw-semibold">Confidence you can see</h5>
+        <p class="muted mb-0">Every prediction includes a probability score and top alternatives.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="glass p-4 h-100">
+        <div class="brand-logo mb-3"><i class="bi bi-clock-history"></i></div>
+        <h5 class="fw-semibold">Full history</h5>
+        <p class="muted mb-0">Every upload is saved so you can review, search, and revisit results.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="mt-5 pt-4">
+  <div class="glass p-4 p-lg-5 text-center">
+    <h3 class="section-title mb-2">Ready to identify your first sound?</h3>
+    <p class="muted mb-4">Drop an audio file and we'll tell you which animal is speaking.</p>
+    <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-mic-fill me-2"></i>Start Recognizing</a>
+  </div>
+</section>
+{% endblock %}
