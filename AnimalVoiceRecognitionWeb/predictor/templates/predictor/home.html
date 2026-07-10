@@ -1,72 +1,194 @@
 {% extends "predictor/base.html" %}
 {% load static %}
-
-{% block title %}VoxAnimal.ai — AI Animal Voice Recognition{% endblock %}
-{% block nav_home %}active{% endblock %}
+{% block title %}VoxFauna AI — Animal Voice Recognition{% endblock %}
 
 {% block content %}
-<section class="hero fade-up">
-  <div class="row align-items-center g-5">
-    <div class="col-lg-7">
-      <span class="chip mb-3"><i class="bi bi-stars"></i> Powered by Deep Learning</span>
-      <h1 class="mb-3">Hear an animal.<br/>Know the species — instantly.</h1>
-      <p class="lead mb-4">VoxAnimal.ai analyzes audio recordings and identifies animals with confidence scores you can trust. Upload a clip and let our neural network do the rest.</p>
-      <div class="d-flex flex-wrap gap-3">
-        <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-cloud-arrow-up me-2"></i>Upload Audio</a>
-        <a href="{% url 'about' %}" class="btn btn-outline-brand"><i class="bi bi-info-circle me-2"></i>How it works</a>
+
+<!-- ===================== HERO ===================== -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-6">
+        <span class="eyebrow reveal-up"><span class="dot"></span> Bioacoustic AI Classifier</span>
+        <h1 class="display-4 fw-bold mt-3 mb-3 reveal-up delay-1">
+          Identify any animal<br> from its <span style="background:var(--grad-primary); -webkit-background-clip:text; background-clip:text; color:transparent;">voice alone.</span>
+        </h1>
+        <p class="fs-5 text-muted-soft mb-4 reveal-up delay-2" style="max-width:520px;">
+          {{ project_subtitle|default:"Upload a sound clip and our trained deep learning model instantly recognizes the species — trained on real bioacoustic recordings from the field." }}
+        </p>
+        <div class="d-flex flex-wrap gap-3 reveal-up delay-3">
+          <a href="{% url 'upload' %}" class="btn btn-grad btn-lg">
+            <i class="bi bi-cloud-arrow-up-fill"></i> Upload Audio
+          </a>
+          <a href="{% url 'about' %}" class="btn btn-outline-avr btn-lg">
+            <i class="bi bi-info-circle"></i> How it works
+          </a>
+        </div>
+        <div class="d-flex flex-wrap gap-4 mt-5 reveal-up delay-4">
+          <div>
+            <div class="fs-3 fw-bold text-mono" style="color:var(--primary)">{{ stat_accuracy|default:"96.4%" }}</div>
+            <div class="small text-muted-soft">Validation accuracy</div>
+          </div>
+          <div>
+            <div class="fs-3 fw-bold text-mono" style="color:var(--primary)">{{ stat_classes|default:"30+" }}</div>
+            <div class="small text-muted-soft">Animal classes</div>
+          </div>
+          <div>
+            <div class="fs-3 fw-bold text-mono" style="color:var(--primary)">{{ stat_predictions|default:"12K" }}</div>
+            <div class="small text-muted-soft">Predictions served</div>
+          </div>
+        </div>
       </div>
-      <div class="d-flex flex-wrap gap-4 mt-5">
-        <div><div class="fw-bold fs-4">98.4%</div><small style="opacity:.85">Top-1 accuracy</small></div>
-        <div><div class="fw-bold fs-4">120+</div><small style="opacity:.85">Species covered</small></div>
-        <div><div class="fw-bold fs-4">&lt; 2s</div><small style="opacity:.85">Avg. inference time</small></div>
-      </div>
-    </div>
-    <div class="col-lg-5 text-center">
-      <div class="floaty d-inline-flex align-items-center justify-content-center"
-           style="width: 320px; height: 320px; border-radius: 50%;
-                  background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.35), rgba(255,255,255,0.05));
-                  border: 1px solid rgba(255,255,255,0.35); backdrop-filter: blur(10px);">
-        <i class="bi bi-soundwave" style="font-size: 8rem; color: #fff; opacity: .95;"></i>
+
+      <div class="col-lg-6">
+        <div class="position-relative" style="padding: 20px;">
+          <div class="hero-badge-float b2">
+            <i class="bi bi-clock-history" style="color:var(--primary);"></i> 0.8s inference
+          </div>
+
+          <!-- Signature visual: mock "live analyzing" audio player -->
+          <div class="waveform-player reveal-up delay-2">
+            <div class="wp-head">
+              <div class="wp-file">
+                <span class="wp-file-icon"><i class="bi bi-file-earmark-music-fill"></i></span>
+                lion_roar_01.wav
+              </div>
+              <span class="wp-live"><span class="wp-live-dot"></span> Analyzing</span>
+            </div>
+
+            <div class="wp-waveform">
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+            </div>
+
+            <div class="wp-controls">
+              <button class="wp-play-btn" type="button" aria-label="Play sample"><i class="bi bi-play-fill"></i></button>
+              <span class="wp-track"></span>
+              <span class="wp-time">0:03 / 0:07</span>
+            </div>
+
+            <div class="wp-verdict">
+              <div class="wp-verdict-animal"><i class="bi bi-paw-fill"></i> African Lion</div>
+              <div class="wp-verdict-conf">98.2% match</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="mt-5 pt-4">
-  <div class="text-center mb-5">
-    <h2 class="section-title">Built for accuracy, designed for you</h2>
-    <p class="muted">Every detail crafted to make animal voice recognition feel effortless.</p>
-  </div>
-  <div class="row g-4">
-    <div class="col-md-4">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-lightning-charge-fill"></i></div>
-        <h5 class="fw-semibold">Real-time inference</h5>
-        <p class="muted mb-0">Get predictions in under two seconds with our optimized ML pipeline.</p>
-      </div>
+<!-- ===================== FEATURES ===================== -->
+<section class="section-pad" id="features">
+  <div class="container">
+    <div class="section-title-wrap mb-5">
+      <span class="eyebrow"><span class="dot"></span> Capabilities</span>
+      <h2 class="fw-bold mt-3">Built for accurate, fast recognition</h2>
+      <p class="text-muted-soft fs-5">Every step of the pipeline, from upload to result, is designed to feel instant and trustworthy.</p>
     </div>
-    <div class="col-md-4">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-shield-check"></i></div>
-        <h5 class="fw-semibold">Confidence you can see</h5>
-        <p class="muted mb-0">Every prediction includes a probability score and top alternatives.</p>
+
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d1">
+          <div class="icon-tile mb-3"><i class="bi bi-soundwave"></i></div>
+          <h5 class="fw-bold mb-2">Waveform-Aware Model</h5>
+          <p class="text-muted-soft mb-0">Trained on spectrogram features extracted from raw audio, capturing pitch, tone, and rhythm unique to each species.</p>
+        </div>
       </div>
-    </div>
-    <div class="col-md-4">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-clock-history"></i></div>
-        <h5 class="fw-semibold">Full history</h5>
-        <p class="muted mb-0">Every upload is saved so you can review, search, and revisit results.</p>
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d2">
+          <div class="icon-tile mb-3"><i class="bi bi-lightning-charge-fill"></i></div>
+          <h5 class="fw-bold mb-2">Fast Inference</h5>
+          <p class="text-muted-soft mb-0">Predictions return in under a second, so you get an answer the moment your clip finishes uploading.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d3">
+          <div class="icon-tile mb-3"><i class="bi bi-shield-check"></i></div>
+          <h5 class="fw-bold mb-2">Confidence Scoring</h5>
+          <p class="text-muted-soft mb-0">Every result ships with a calibrated confidence percentage, not just a guess, so you know how much to trust it.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d1">
+          <div class="icon-tile mb-3"><i class="bi bi-clock-history"></i></div>
+          <h5 class="fw-bold mb-2">Prediction History</h5>
+          <p class="text-muted-soft mb-0">Every upload is logged automatically, so past classifications stay searchable and reviewable.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d2">
+          <div class="icon-tile mb-3"><i class="bi bi-phone"></i></div>
+          <h5 class="fw-bold mb-2">Works Anywhere</h5>
+          <p class="text-muted-soft mb-0">A fully responsive interface that feels equally at home on a lab desktop or a phone in the field.</p>
+        </div>
+      </div>
+      <div class="col-md-6 col-lg-4">
+        <div class="card-avr rounded-xl p-4 h-100 reveal-scroll rs-d3">
+          <div class="icon-tile mb-3"><i class="bi bi-mic-fill"></i></div>
+          <h5 class="fw-bold mb-2">Drag & Drop Upload</h5>
+          <p class="text-muted-soft mb-0">Drop a file, click browse, or paste a clip — the upload flow adapts to how you like to work.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="mt-5 pt-4">
-  <div class="glass p-4 p-lg-5 text-center">
-    <h3 class="section-title mb-2">Ready to identify your first sound?</h3>
-    <p class="muted mb-4">Drop an audio file and we'll tell you which animal is speaking.</p>
-    <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-mic-fill me-2"></i>Start Recognizing</a>
+<!-- ===================== ABOUT AI SECTION ===================== -->
+<section class="section-pad" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="container">
+    <div class="row align-items-center gy-5">
+      <div class="col-lg-6 order-lg-2 reveal-scroll rs-d1">
+        <span class="eyebrow"><span class="dot"></span> Under the hood</span>
+        <h2 class="fw-bold mt-3 mb-3">How the AI listens</h2>
+        <p class="text-muted-soft fs-5 mb-4">
+          Audio is converted into a mel-spectrogram — a visual fingerprint of frequency over time — then passed through a convolutional neural network trained to associate acoustic patterns with species labels.
+        </p>
+        <div class="d-flex flex-column gap-3">
+          <div class="d-flex gap-3">
+            <div class="icon-tile" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;"><i class="bi bi-1-circle"></i></div>
+            <div><strong>Preprocessing</strong><div class="text-muted-soft small">Audio is cleaned, trimmed, and normalized.</div></div>
+          </div>
+          <div class="d-flex gap-3">
+            <div class="icon-tile" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;"><i class="bi bi-2-circle"></i></div>
+            <div><strong>Feature extraction</strong><div class="text-muted-soft small">MFCCs and spectrograms capture the sound's signature.</div></div>
+          </div>
+          <div class="d-flex gap-3">
+            <div class="icon-tile" style="width:40px;height:40px;font-size:1rem;flex-shrink:0;"><i class="bi bi-3-circle"></i></div>
+            <div><strong>Classification</strong><div class="text-muted-soft small">The trained model scores every known species.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6 order-lg-1 reveal-scroll rs-d2">
+        <div class="card-avr rounded-xxl p-4 p-lg-5 text-center" style="background:var(--grad-soft);">
+          <i class="bi bi-cpu" style="font-size:5rem; color:var(--primary);"></i>
+          <h4 class="fw-bold mt-4">Convolutional Neural Network</h4>
+          <p class="text-muted-soft">Trained on labeled animal-call datasets using spectrogram-based deep learning.</p>
+          <div class="d-flex flex-wrap justify-content-center gap-2 mt-3">
+            <span class="tech-pill"><i class="bi bi-check2"></i> Librosa</span>
+            <span class="tech-pill"><i class="bi bi-check2"></i> TensorFlow</span>
+            <span class="tech-pill"><i class="bi bi-check2"></i> Django</span>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
+
+<!-- ===================== CTA STRIP ===================== -->
+<section class="section-pad-sm">
+  <div class="container">
+    <div class="card-avr rounded-xxl p-5 text-center reveal-scroll" style="background: var(--grad-primary);">
+      <h2 class="fw-bold text-white mb-2">Ready to identify a sound?</h2>
+      <p class="text-white-50 fs-5 mb-4">Upload a clip and get a species prediction in seconds.</p>
+      <a href="{% url 'upload' %}" class="btn btn-light btn-lg rounded-pill fw-bold px-4">
+        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Audio Now
+      </a>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

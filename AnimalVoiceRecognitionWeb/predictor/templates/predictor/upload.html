@@ -1,106 +1,143 @@
 {% extends "predictor/base.html" %}
 {% load static %}
-
-{% block title %}Upload Audio — VoxAnimal.ai{% endblock %}
-{% block nav_upload %}active{% endblock %}
+{% block title %}Upload Audio — VoxFauna AI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center fade-up">
-  <div class="col-lg-9">
-    <div class="text-center mb-4">
-      <span class="chip mb-3" style="background: var(--brand-50); color: var(--brand-700); border-color: var(--brand-100);">
-        <i class="bi bi-cloud-arrow-up"></i> Upload
-      </span>
-      <h1 class="section-title">Drop your audio, get the animal</h1>
-      <p class="muted">Supported formats: MP3, WAV, OGG, M4A · Max 20MB</p>
+<section class="section-pad" style="padding-top:60px;">
+  <div class="container">
+    <div class="text-center section-title-wrap mx-auto mb-5">
+      <span class="eyebrow"><span class="dot"></span> Step 1 of 2</span>
+      <h1 class="fw-bold mt-3 mb-2">Upload an animal sound clip</h1>
+      <p class="text-muted-soft fs-5">Supported formats: WAV, MP3, OGG, FLAC — up to 10MB.</p>
     </div>
 
-    <div class="glass p-4 p-lg-5">
-      <form method="POST" action="{% url 'upload' %}" enctype="multipart/form-data" id="uploadForm">
-        {% csrf_token %}
+    <div class="row justify-content-center">
+      <div class="col-lg-7">
+        <div class="card-avr rounded-xxl p-4 p-md-5 reveal-up">
 
-        <label for="audioInput" id="dropZone"
-          class="d-flex flex-column align-items-center justify-content-center text-center p-5"
-          style="border: 2px dashed var(--brand-300); border-radius: var(--radius-lg);
-                 background: rgba(239,246,255,0.6); cursor: pointer; transition: all .25s ease; min-height: 260px;">
-          <div class="brand-logo mb-3" style="width:64px; height:64px; border-radius:18px;">
-            <i class="bi bi-cloud-arrow-up-fill" style="font-size: 1.8rem;"></i>
-          </div>
-          <h5 class="fw-semibold mb-1">Drag & drop your audio file here</h5>
-          <p class="muted mb-3">or click to browse from your computer</p>
-          <span class="btn btn-outline-brand btn-sm"><i class="bi bi-folder2-open me-1"></i> Choose file</span>
-          <input type="file" name="audio" id="audioInput" accept="audio/*" hidden />
-        </label>
-
-        <div id="preview" class="mt-4 d-none">
-          <div class="glass p-3 d-flex align-items-center gap-3" style="background: #fff;">
-            <div class="brand-logo" style="min-width:44px;"><i class="bi bi-file-earmark-music-fill"></i></div>
-            <div class="grow min-w-0">
-              <div class="fw-semibold text-truncate" id="fileName">—</div>
-              <small class="muted" id="fileMeta">—</small>
-              <audio controls class="w-100 mt-2" id="audioPlayer"></audio>
+          <!-- Django form: action/enctype wired to your existing upload view -->
+          <form method="post" enctype="multipart/form-data" action="{% url 'upload' %}" id="uploadForm">
+            {% csrf_token %}
+            
+            <!-- Drag & Drop Zone -->
+            <div class="dropzone" id="dropzone">
+              <div class="dz-icon"><i class="bi bi-cloud-arrow-up-fill"></i></div>
+              <h5 class="fw-bold mb-1">Drag & drop your audio file here</h5>
+              <p class="text-muted-soft mb-3">or click to browse from your device</p>
+              <span class="btn btn-outline-avr">
+                <i class="bi bi-folder2-open"></i> Browse Files
+              </span>
+              <input type="file" name="audio" id="audioFileInput" accept="audio/*" hidden required>
             </div>
-            <button type="button" class="btn btn-outline-brand btn-sm" id="clearBtn" title="Remove">
-              <i class="bi bi-x-lg"></i>
-            </button>
+
+            <!-- Selected file chip -->
+            <div id="fileChipWrap" class="d-none mt-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div class="file-chip">
+                <span class="chip-icon"><i class="bi bi-file-earmark-music-fill"></i></span>
+                <div>
+                  <div class="fw-semibold" id="selectedFileName">audio_clip.wav</div>
+                  <div class="small text-muted-soft" id="selectedFileSize">0 KB</div>
+                </div>
+              </div>
+              <button type="button" id="removeFileBtn" class="btn btn-sm btn-outline-avr">
+                <i class="bi bi-x-lg"></i> Remove
+              </button>
+            </div>
+
+            <!-- Optional notes field (purely UI) -->
+            <div class="mt-4">
+              <label for="clipNotes" class="form-label fw-semibold small text-muted-soft">Notes (optional)</label>
+              <textarea class="form-control rounded-xl" id="clipNotes" name="notes" rows="2" placeholder="e.g. Recorded near the riverbank at dusk" style="border-color: var(--line);"></textarea>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-grad btn-lg" id="uploadSubmitBtn" disabled>
+                <i class="bi bi-mic-fill"></i> Predict Animal Sound
+              </button>
+            </div>
+          </form>
+
+        </div>
+
+        <!-- Helper tips -->
+        <div class="row g-3 mt-4">
+          <div class="col-md-4">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-check-circle-fill" style="color:var(--cyan);"></i>
+              <span class="small text-muted-soft">Clear, low-noise recordings work best.</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-check-circle-fill" style="color:var(--cyan);"></i>
+              <span class="small text-muted-soft">Clips between 2–15 seconds are ideal.</span>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-check-circle-fill" style="color:var(--cyan);"></i>
+              <span class="small text-muted-soft">One dominant animal call per clip.</span>
+            </div>
           </div>
         </div>
-
-        <div class="d-flex flex-wrap gap-3 mt-4 justify-content-end">
-          <a href="{% url 'home' %}" class="btn btn-outline-brand"><i class="bi bi-arrow-left me-1"></i>Cancel</a>
-          <button type="submit" class="btn btn-brand" id="submitBtn" disabled>
-            <i class="bi bi-magic me-1"></i> Recognize Animal
-          </button>
-        </div>
-      </form>
-    </div>
-
-    <div class="row g-3 mt-4">
-      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-shield-lock text-primary fs-4"></i><small class="muted mb-0">Your files are processed securely and never shared.</small></div></div>
-      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-lightning text-primary fs-4"></i><small class="muted mb-0">Predictions delivered in under two seconds.</small></div></div>
-      <div class="col-md-4"><div class="glass p-3 d-flex align-items-center gap-3"><i class="bi bi-graph-up text-primary fs-4"></i><small class="muted mb-0">Get top-3 species with confidence scores.</small></div></div>
+      </div>
     </div>
   </div>
-</div>
+</section>
 {% endblock %}
-
 {% block extra_scripts %}
 <script>
-  const dz = document.getElementById('dropZone');
-  const input = document.getElementById('audioInput');
-  const preview = document.getElementById('preview');
-  const fileName = document.getElementById('fileName');
-  const fileMeta = document.getElementById('fileMeta');
-  const audioPlayer = document.getElementById('audioPlayer');
-  const submitBtn = document.getElementById('submitBtn');
-  const clearBtn = document.getElementById('clearBtn');
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("audioFileInput");
+const fileChip = document.getElementById("fileChipWrap");
+const fileName = document.getElementById("selectedFileName");
+const fileSize = document.getElementById("selectedFileSize");
+const removeBtn = document.getElementById("removeFileBtn");
+const submitBtn = document.getElementById("uploadSubmitBtn");
 
-  function formatSize(bytes){
-    if (bytes < 1024) return bytes + ' B';
-    if (bytes < 1048576) return (bytes/1024).toFixed(1) + ' KB';
-    return (bytes/1048576).toFixed(2) + ' MB';
-  }
-  function setFile(file){
-    if(!file) return;
-    fileName.textContent = file.name;
-    fileMeta.textContent = file.type + ' · ' + formatSize(file.size);
-    audioPlayer.src = URL.createObjectURL(file);
-    preview.classList.remove('d-none');
-    submitBtn.disabled = false;
-  }
-  input.addEventListener('change', e => setFile(e.target.files[0]));
-  ['dragenter','dragover'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.style.background = 'rgba(219,234,254,0.9)'; dz.style.borderColor = 'var(--brand-500)';
-  }));
-  ['dragleave','drop'].forEach(ev => dz.addEventListener(ev, e => {
-    e.preventDefault(); dz.style.background = 'rgba(239,246,255,0.6)'; dz.style.borderColor = 'var(--brand-300)';
-  }));
-  dz.addEventListener('drop', e => {
-    const f = e.dataTransfer.files[0];
-    if(f){ input.files = e.dataTransfer.files; setFile(f); }
-  });
-  clearBtn.addEventListener('click', () => {
-    input.value = ''; preview.classList.add('d-none'); submitBtn.disabled = true;
-  });
+// Open file explorer
+dropzone.addEventListener("click", function () {
+    fileInput.click();
+});
+
+// File selected
+fileInput.addEventListener("change", function () {
+
+    if (this.files.length > 0) {
+
+        const file = this.files[0];
+
+        fileName.innerText = file.name;
+        fileSize.innerText = (file.size / 1024).toFixed(2) + " KB";
+
+        fileChip.classList.remove("d-none");
+        submitBtn.disabled = false;
+    }
+});
+
+// Remove selected file
+removeBtn.addEventListener("click", function () {
+
+    fileInput.value = "";
+
+    fileChip.classList.add("d-none");
+
+    submitBtn.disabled = true;
+});
+
+// Drag over
+dropzone.addEventListener("dragover", function(e){
+    e.preventDefault();
+});
+
+// Drop file
+dropzone.addEventListener("drop", function(e){
+
+    e.preventDefault();
+
+    fileInput.files = e.dataTransfer.files;
+
+    fileInput.dispatchEvent(new Event("change"));
+});
 </script>
 {% endblock %}

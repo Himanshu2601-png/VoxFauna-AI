@@ -1,119 +1,100 @@
 {% extends "predictor/base.html" %}
 {% load static %}
-
-{% block title %}Prediction History — VoxAnimal.ai{% endblock %}
-{% block nav_history %}active{% endblock %}
+{% block title %}Prediction History — VoxFauna AI{% endblock %}
 
 {% block content %}
-<div class="fade-up">
-  <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
-    <div>
-      <h1 class="section-title mb-1">Prediction History</h1>
-      <p class="muted mb-0">All the animal voices you've identified with VoxAnimal.ai</p>
-    </div>
-    <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-plus-lg me-1"></i>New Upload</a>
-  </div>
+<section class="section-pad" style="padding-top:60px;">
+  <div class="container">
 
-  <div class="glass p-3 p-lg-4 mb-4">
-    <form method="GET" action="{% url 'history' %}" class="row g-2 align-items-center">
-      <div class="col-md">
-        <div class="position-relative">
-          <i class="bi bi-search position-absolute" style="top:50%; left:14px; transform:translateY(-50%); color: var(--ink-300);"></i>
-          <input type="text" name="q" value="{{ request.GET.q }}" class="form-control ps-5"
-                 placeholder="Search by animal name, file, or date…" />
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <span class="eyebrow"><span class="dot"></span> Records</span>
+        <h1 class="fw-bold mt-3 mb-1">Prediction History</h1>
+        <p class="text-muted-soft fs-5 mb-0">Every clip you've uploaded, with the model's verdict.</p>
+      </div>
+      <div class="search-wrap">
+        <i class="bi bi-search"></i>
+        <input type="text" class="search-input" id="historySearchInput" placeholder="Search by filename or animal...">
+      </div>
+    </div>
+
+    <!-- Quick stats -->
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-3">
+        <div class="stat-strip p-3 text-center">
+          <div class="stat-num">{{ total_predictions|default:"128" }}</div>
+          <div class="small text-muted-soft">Total predictions</div>
         </div>
       </div>
-      <div class="col-md-auto">
-        <select name="sort" class="form-select">
-          <option value="recent">Most recent</option>
-          <option value="confidence">Highest confidence</option>
-          <option value="animal">Animal A–Z</option>
-        </select>
+      <div class="col-6 col-md-3">
+        <div class="stat-strip p-3 text-center">
+          <div class="stat-num">{{ unique_species|default:"14" }}</div>
+          <div class="small text-muted-soft">Unique species</div>
+        </div>
       </div>
-      <div class="col-md-auto">
-        <button class="btn btn-brand w-100" type="submit"><i class="bi bi-funnel me-1"></i>Filter</button>
+      <div class="col-6 col-md-3">
+        <div class="stat-strip p-3 text-center">
+          <div class="stat-num">{{ avg_confidence|default:"93%" }}</div>
+          <div class="small text-muted-soft">Avg. confidence</div>
+        </div>
       </div>
-    </form>
-  </div>
-
-  <div class="glass p-3 p-lg-4">
-    <div class="table-responsive">
-      <table class="table table-modern align-middle mb-0">
-        <thead>
-          <tr>
-            <th style="padding-left: 16px;">#</th>
-            <th>Animal</th>
-            <th>File</th>
-            <th>Confidence</th>
-            <th>Date</th>
-            <th class="text-end" style="padding-right: 16px;">Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for item in history %}
-          <tr>
-            <td style="padding-left: 16px;" class="muted">{{ forloop.counter0|add:page_obj.start_index }}</td>
-            <td>
-              <div class="d-flex align-items-center gap-2">
-                <span class="brand-logo" style="width:34px; height:34px; border-radius:10px;"><i class="bi bi-{{ item.icon|default:'emoji-smile' }}"></i></span>
-                <span class="fw-semibold">{{ item.animal }}</span>
-              </div>
-            </td>
-            <td class="muted text-truncate" style="max-width:220px;">{{ item.filename }}</td>
-            <td style="min-width: 180px;">
-              <div class="d-flex align-items-center gap-2">
-                <div class="progress progress-modern grow" style="height:8px;">
-                  <div class="progress-bar" style="width: {{ item.confidence }}%; background: linear-gradient(90deg, var(--brand-500), var(--brand-700));"></div>
-                </div>
-                <small class="fw-semibold" style="color: var(--brand-700);">{{ item.confidence }}%</small>
-              </div>
-            </td>
-            <td class="muted">{{ item.created_at|date:"M d, Y H:i" }}</td>
-            <td class="text-end" style="padding-right: 16px;">
-              <a href="{% url 'result' item.id %}" class="btn btn-outline-brand btn-sm">
-                <i class="bi bi-eye"></i>
-              </a>
-            </td>
-          </tr>
-          {% empty %}
-          <tr>
-            <td colspan="6" class="text-center py-5">
-              <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-inbox fs-3"></i></div>
-              <h6 class="fw-semibold mb-1">No predictions yet</h6>
-              <p class="muted mb-3">Upload your first audio file to see it here.</p>
-              <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-cloud-arrow-up me-1"></i>Upload Audio</a>
-            </td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+      <div class="col-6 col-md-3">
+        <div class="stat-strip p-3 text-center">
+          <div class="stat-num">{{ last_upload|default:"Today" }}</div>
+          <div class="small text-muted-soft">Last upload</div>
+        </div>
+      </div>
     </div>
 
-    {% if is_paginated %}
-    <nav class="mt-4 d-flex justify-content-center">
-      <ul class="pagination">
-        {% if page_obj.has_previous %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}"><i class="bi bi-chevron-left"></i></a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-left"></i></span></li>
-        {% endif %}
+    <div class="table-avr reveal-up">
+      <div class="table-responsive">
+        <table class="table table-avr mb-0 align-middle">
+          <thead>
+            <tr>
+              <th>Filename</th>
+              <th>Prediction</th>
+              <th>Confidence</th>
+              <th>Date</th>
+              <th class="text-end">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in prediction_history %}
+            <tr class="history-row">
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <i class="bi bi-file-earmark-music text-primary"></i>
+                  <span class="fw-semibold">{{ item.filename }}</span>
+                </div>
+              </td>
+              <td><span class="badge-animal"><i class="bi bi-paw"></i> {{ item.prediction }}</span></td>
+              <td>
+                <div class="d-flex align-items-center gap-2">
+                  <span class="text-mono fw-semibold">{{ item.confidence }}%</span>
+                  <span class="mini-progress"><span style="width:{{ item.confidence }}%;"></span></span>
+                </div>
+              </td>
+              <td class="text-muted-soft">{{ item.uploaded_at|date:"d M Y, h:i A" }}</td>
+              <td class="text-end">
+                <a href="#" class="btn btn-sm btn-outline-avr"><i class="bi bi-eye"></i></a>
+              </td>
+            </tr>
+            {% empty %}
+            <tr>
+              <td colspan="5" class="text-center">
+                  No prediction history available.
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      <div id="historyEmptyState" class="d-none text-center py-5">
+        <i class="bi bi-search fs-1 text-muted-soft"></i>
+        <p class="text-muted-soft mt-2 mb-0">No matching records found.</p>
+      </div>
+    </div>
 
-        {% for num in page_obj.paginator.page_range %}
-          {% if num == page_obj.number %}
-            <li class="page-item active"><span class="page-link">{{ num }}</span></li>
-          {% else %}
-            <li class="page-item"><a class="page-link" href="?page={{ num }}">{{ num }}</a></li>
-          {% endif %}
-        {% endfor %}
-
-        {% if page_obj.has_next %}
-          <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}"><i class="bi bi-chevron-right"></i></a></li>
-        {% else %}
-          <li class="page-item disabled"><span class="page-link"><i class="bi bi-chevron-right"></i></span></li>
-        {% endif %}
-      </ul>
-    </nav>
-    {% endif %}
   </div>
-</div>
+</section>
 {% endblock %}

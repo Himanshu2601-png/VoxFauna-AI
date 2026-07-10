@@ -1,80 +1,117 @@
 {% extends "predictor/base.html" %}
 {% load static %}
-
-{% block title %}About — VoxAnimal.ai{% endblock %}
-{% block nav_about %}active{% endblock %}
+{% block title %}About the Project — VoxFauna AI{% endblock %}
 
 {% block content %}
-<section class="hero fade-up">
-  <div class="row align-items-center g-4">
-    <div class="col-lg-8">
-      <span class="chip mb-3"><i class="bi bi-info-circle"></i> About</span>
-      <h1 class="mb-2">Teaching machines to listen to nature.</h1>
-      <p class="lead mb-0">VoxAnimal.ai is a research-grade AI system that recognizes animals from short audio recordings. We're on a mission to make bioacoustics accessible to everyone.</p>
-    </div>
-    <div class="col-lg-4 text-center">
-      <i class="bi bi-globe-americas floaty" style="font-size:9rem; color:#fff; opacity:.9;"></i>
-    </div>
+
+<section class="hero-section" style="padding: 70px 0 50px;">
+  <div class="container text-center">
+    <span class="eyebrow"><span class="dot"></span> About the Project</span>
+    <h1 class="fw-bold mt-3 mb-3">Teaching machines to recognize<br class="d-none d-md-block"> the sounds of the wild</h1>
+    <p class="text-muted-soft fs-5 mx-auto" style="max-width:640px;">
+      VoxFauna AI is a research project pairing a Django web application with a deep-learning audio classifier,
+      built to identify animal species from short sound recordings.
+    </p>
   </div>
 </section>
 
-<section class="mt-5 pt-3">
-  <div class="row g-4">
-    <div class="col-md-6">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-cpu"></i></div>
-        <h5 class="fw-semibold">The Model</h5>
-        <p class="muted mb-0">A deep convolutional network trained on tens of thousands of labeled audio clips across 120+ species, using mel-spectrogram representations for high accuracy.</p>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-mic"></i></div>
-        <h5 class="fw-semibold">The Pipeline</h5>
-        <p class="muted mb-0">Uploaded audio is resampled, denoised, and converted to a spectrogram. The model outputs a probability distribution across all supported species.</p>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-tree"></i></div>
-        <h5 class="fw-semibold">The Mission</h5>
-        <p class="muted mb-0">Support conservationists, researchers, and hobbyists with accessible tools for identifying wildlife by sound alone.</p>
-      </div>
-    </div>
-    <div class="col-md-6">
-      <div class="glass p-4 h-100">
-        <div class="brand-logo mb-3"><i class="bi bi-shield-lock"></i></div>
-        <h5 class="fw-semibold">Privacy</h5>
-        <p class="muted mb-0">Your uploads are stored securely and used only to deliver predictions and improve model quality with your consent.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section class="mt-5 pt-3">
-  <div class="glass p-4 p-lg-5">
-    <h3 class="section-title mb-4 text-center">How it works</h3>
+<section class="section-pad-sm">
+  <div class="container">
     <div class="row g-4">
-      <div class="col-md-4 text-center">
-        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-1-circle fs-3"></i></div>
-        <h6 class="fw-semibold">Upload audio</h6>
-        <p class="muted small mb-0">Drag & drop or select an MP3, WAV, OGG, or M4A file.</p>
+      <div class="col-md-4">
+        <div class="card-avr rounded-xl p-4 h-100 text-center reveal-scroll rs-d1">
+          <i class="bi bi-bullseye fs-1 mb-3" style="color:var(--primary);"></i>
+          <h5 class="fw-bold">Mission</h5>
+          <p class="text-muted-soft mb-0">Make bioacoustic species identification accessible to researchers, students, and wildlife enthusiasts.</p>
+        </div>
       </div>
-      <div class="col-md-4 text-center">
-        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-2-circle fs-3"></i></div>
-        <h6 class="fw-semibold">AI analysis</h6>
-        <p class="muted small mb-0">Our model converts sound into features and predicts the species.</p>
+      <div class="col-md-4">
+        <div class="card-avr rounded-xl p-4 h-100 text-center reveal-scroll rs-d2">
+          <i class="bi bi-database-fill-check fs-1 mb-3" style="color:var(--primary);"></i>
+          <h5 class="fw-bold">Training Data</h5>
+          <p class="text-muted-soft mb-0">Labeled recordings spanning mammals, birds, and reptiles, curated for balanced species representation.</p>
+        </div>
       </div>
-      <div class="col-md-4 text-center">
-        <div class="brand-logo mx-auto mb-3" style="width:56px; height:56px;"><i class="bi bi-3-circle fs-3"></i></div>
-        <h6 class="fw-semibold">Get results</h6>
-        <p class="muted small mb-0">See the animal name, confidence, and top alternatives.</p>
+      <div class="col-md-4">
+        <div class="card-avr rounded-xl p-4 h-100 text-center reveal-scroll rs-d3">
+          <i class="bi bi-graph-up-arrow fs-1 mb-3" style="color:var(--primary);"></i>
+          <h5 class="fw-bold">Continuous Learning</h5>
+          <p class="text-muted-soft mb-0">Every prediction logged in history helps flag edge cases for future retraining rounds.</p>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
-<section class="mt-5 pt-3 text-center">
-  <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-cloud-arrow-up me-2"></i>Try VoxAnimal now</a>
+<!-- ===================== PIPELINE ===================== -->
+<section class="section-pad" style="background:var(--surface); border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+  <div class="container">
+    <div class="row gy-5">
+      <div class="col-lg-5 reveal-scroll">
+        <span class="eyebrow"><span class="dot"></span> Pipeline</span>
+        <h2 class="fw-bold mt-3 mb-3">From raw audio to prediction</h2>
+        <p class="text-muted-soft fs-5">A straightforward four-stage flow turns an uploaded file into a labeled, confidence-scored result.</p>
+      </div>
+      <div class="col-lg-7">
+        <div class="pipeline-step reveal-scroll rs-d1">
+          <div class="pipeline-num">01</div>
+          <div>
+            <h5 class="fw-bold mb-1">Upload</h5>
+            <p class="text-muted-soft mb-0">The user drags in or selects an audio clip through the upload page.</p>
+          </div>
+        </div>
+        <div class="pipeline-step reveal-scroll rs-d2">
+          <div class="pipeline-num">02</div>
+          <div>
+            <h5 class="fw-bold mb-1">Preprocessing</h5>
+            <p class="text-muted-soft mb-0">The clip is resampled, trimmed of silence, and converted into a mel-spectrogram.</p>
+          </div>
+        </div>
+        <div class="pipeline-step reveal-scroll rs-d3">
+          <div class="pipeline-num">03</div>
+          <div>
+            <h5 class="fw-bold mb-1">Model Inference</h5>
+            <p class="text-muted-soft mb-0">The trained neural network scores the spectrogram against every known species class.</p>
+          </div>
+        </div>
+        <div class="pipeline-step reveal-scroll rs-d4">
+          <div class="pipeline-num">04</div>
+          <div>
+            <h5 class="fw-bold mb-1">Result & Logging</h5>
+            <p class="text-muted-soft mb-0">The top prediction and confidence score are shown to the user and saved to history.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </section>
+
+<!-- ===================== TECH STACK ===================== -->
+<section class="section-pad-sm">
+  <div class="container text-center">
+    <span class="eyebrow"><span class="dot"></span> Tech Stack</span>
+    <h2 class="fw-bold mt-3 mb-4">Built with</h2>
+    <div class="d-flex flex-wrap justify-content-center gap-3">
+      <span class="tech-pill"><i class="bi bi-check2"></i> Django</span>
+      <span class="tech-pill"><i class="bi bi-check2"></i> TensorFlow / Keras</span>
+      <span class="tech-pill"><i class="bi bi-check2"></i> Librosa</span>
+      <span class="tech-pill"><i class="bi bi-check2"></i> NumPy</span>
+      <span class="tech-pill"><i class="bi bi-check2"></i> Bootstrap 5</span>
+      <span class="tech-pill"><i class="bi bi-check2"></i> SQLite / PostgreSQL</span>
+    </div>
+  </div>
+</section>
+
+<section class="section-pad-sm">
+  <div class="container">
+    <div class="card-avr rounded-xxl p-5 text-center" style="background: var(--grad-primary);">
+      <h2 class="fw-bold text-white mb-2">Curious how accurate it is?</h2>
+      <p class="text-white-50 fs-5 mb-4">Try uploading your own animal recording and see the model in action.</p>
+      <a href="{% url 'upload' %}" class="btn btn-light btn-lg rounded-pill fw-bold px-4">
+        <i class="bi bi-cloud-arrow-up-fill me-1"></i> Upload Audio
+      </a>
+    </div>
+  </div>
+</section>
+
 {% endblock %}

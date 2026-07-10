@@ -1,98 +1,196 @@
 {% extends "predictor/base.html" %}
 {% load static %}
 
-{% block title %}Prediction Result — VoxAnimal.ai{% endblock %}
-
-{% block extra_head %}
-<style>
-  .result-hero {
-    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-    border-radius: var(--radius-lg);
-    padding: 40px;
-  }
-  .animal-badge {
-    width: 140px; height: 140px; border-radius: 50%;
-    background: linear-gradient(135deg, var(--brand-500), var(--brand-700));
-    color: #fff; display: inline-flex; align-items: center; justify-content: center;
-    box-shadow: 0 20px 45px rgba(37,99,235,0.35);
-  }
-  .animal-badge i { font-size: 4.5rem; }
-  .progress-modern {
-    height: 18px; border-radius: 999px; background: #e5edff; overflow: hidden;
-  }
-  .progress-modern .progress-bar {
-    background: linear-gradient(90deg, var(--brand-500), var(--brand-700));
-    border-radius: 999px;
-    box-shadow: 0 0 20px rgba(59,130,246,0.5) inset;
-  }
-</style>
-{% endblock %}
+{% block title %}Prediction Result — VoxFauna AI{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center fade-up">
-  <div class="col-lg-9">
-    <div class="glass p-4 p-lg-5">
-      <div class="result-hero text-center">
-        <div class="animal-badge mb-3 floaty">
-          <i class="bi bi-{{ result.icon|default:'emoji-smile' }}"></i>
-        </div>
-        <div class="muted small text-uppercase" style="letter-spacing:.14em;">Predicted animal</div>
-        <h1 class="section-title mb-2" style="font-size: clamp(2rem, 4vw, 3rem);">
-          {{ result.animal|default:"Unknown Animal" }}
-        </h1>
-        <p class="muted mb-0">{{ result.scientific_name|default:"Species identified from audio waveform analysis." }}</p>
-      </div>
 
-      <div class="mt-5">
-        <div class="d-flex justify-content-between align-items-baseline mb-2">
-          <span class="fw-semibold">Confidence</span>
-          <span class="fs-4 fw-bold" style="color: var(--brand-700);">
-            {{ result.confidence|default:"0" }}%
-          </span>
-        </div>
-        <div class="progress progress-modern">
-          <div class="progress-bar progress-bar-striped progress-bar-animated"
-               role="progressbar"
-               style="width: {{ result.confidence|default:0 }}%;"
-               aria-valuenow="{{ result.confidence|default:0 }}"
-               aria-valuemin="0" aria-valuemax="100"></div>
-        </div>
-        <small class="muted d-block mt-2">Higher confidence means the model is more certain about its prediction.</small>
-      </div>
+<section class="section-pad" style="padding-top:60px;">
 
-      {% if result.top_predictions %}
-      <div class="mt-5">
-        <h6 class="fw-semibold mb-3">Other likely matches</h6>
-        <div class="row g-3">
-          {% for p in result.top_predictions %}
-          <div class="col-md-4">
-            <div class="glass p-3 h-100">
-              <div class="d-flex align-items-center justify-content-between mb-2">
-                <span class="fw-semibold">{{ p.animal }}</span>
-                <span class="badge rounded-pill" style="background: var(--brand-50); color: var(--brand-700);">{{ p.confidence }}%</span>
-              </div>
-              <div class="progress progress-modern" style="height:8px;">
-                <div class="progress-bar" style="width: {{ p.confidence }}%;"></div>
-              </div>
+    <div class="container">
+
+        <div class="text-center section-title-wrap mx-auto mb-5">
+
+            <span class="eyebrow">
+                <span class="dot"></span>
+                Step 2 of 2
+            </span>
+
+            <h1 class="fw-bold mt-3 mb-2">
+                Prediction Result
+            </h1>
+
+            <p class="text-muted-soft fs-5">
+                Here's what our AI model detected from your uploaded audio.
+            </p>
+
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-lg-7">
+
+                <div class="card-avr rounded-xxl p-5 text-center reveal-up">
+
+                    <!-- Animal Image -->
+
+                    <div class="mb-4">
+
+                        <img
+                            src="{% static animal_image %}"
+                            alt="{{ prediction }}"
+                            class="rounded-circle shadow-lg"
+                            style="
+                                width:170px;
+                                height:170px;
+                                object-fit:cover;
+                                border:6px solid white;
+                            ">
+
+                    </div>
+
+                    <!-- Prediction -->
+
+                    <span class="eyebrow mb-2">
+
+                        <span class="dot"></span>
+
+                        Prediction Complete
+
+                    </span>
+
+                    <h2 class="fw-bold display-5 mt-3">
+
+                        {{ prediction|title }}
+
+                    </h2>
+
+                    <p class="text-muted-soft mb-4">
+
+                        Identified using our trained Random Forest Animal Voice Recognition model.
+
+                    </p>
+
+                    <!-- Confidence -->
+
+                    <div class="mb-5">
+
+                        <div class="d-flex justify-content-between mb-2">
+
+                            <span class="fw-semibold">
+                                Confidence
+                            </span>
+
+                            <span class="fw-bold text-primary">
+
+                                {{ confidence }}%
+
+                            </span>
+
+                        </div>
+
+                        <div class="progress" style="height:14px;border-radius:20px;">
+
+                            <div
+                                class="progress-bar progress-bar-striped progress-bar-animated bg-primary"
+                                style="width:{{ confidence }}%;">
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Information -->
+
+                    <div class="text-start">
+
+                        <div class="meta-row">
+
+                            <span class="meta-label">
+
+                                <i class="bi bi-file-earmark-music"></i>
+
+                                Uploaded File
+
+                            </span>
+
+                            <span class="meta-value">
+
+                                {{ uploaded_filename }}
+
+                            </span>
+
+                        </div>
+
+                        <div class="meta-row">
+
+                            <span class="meta-label">
+
+                                <i class="bi bi-stopwatch"></i>
+
+                                Inference Time
+
+                            </span>
+
+                            <span class="meta-value">
+
+                                {{ inference_time|default:"0.82 sec" }}
+
+                            </span>
+
+                        </div>
+
+                        <div class="meta-row">
+
+                            <span class="meta-label">
+
+                                <i class="bi bi-calendar-event"></i>
+
+                                Prediction Date
+
+                            </span>
+
+                            <span class="meta-value">
+
+                                {{ predicted_on|default:"Today" }}
+
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Buttons -->
+
+                    <div class="d-flex justify-content-center gap-3 mt-5">
+
+                        <a href="{% url 'upload' %}" class="btn btn-grad btn-lg">
+
+                            <i class="bi bi-arrow-repeat me-2"></i>
+
+                            Predict Again
+
+                        </a>
+
+                        <a href="{% url 'history' %}" class="btn btn-outline-avr btn-lg">
+
+                            <i class="bi bi-clock-history me-2"></i>
+
+                            History
+
+                        </a>
+
+                    </div>
+
+                </div>
+
             </div>
-          </div>
-          {% endfor %}
+
         </div>
-      </div>
-      {% endif %}
 
-      {% if result.audio_url %}
-      <div class="mt-4">
-        <h6 class="fw-semibold mb-2">Your audio</h6>
-        <audio controls class="w-100" src="{{ result.audio_url }}"></audio>
-      </div>
-      {% endif %}
-
-      <div class="d-flex flex-wrap gap-3 mt-5 justify-content-center">
-        <a href="{% url 'upload' %}" class="btn btn-brand"><i class="bi bi-arrow-repeat me-1"></i> Upload Another</a>
-        <a href="{% url 'history' %}" class="btn btn-outline-brand"><i class="bi bi-clock-history me-1"></i> View History</a>
-      </div>
     </div>
-  </div>
-</div>
+
+</section>
+
 {% endblock %}

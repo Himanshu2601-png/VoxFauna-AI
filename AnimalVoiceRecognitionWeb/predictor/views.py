@@ -1,3 +1,4 @@
+from .models import PredictionHistory
 import os
 import joblib
 import librosa
@@ -35,29 +36,37 @@ def home(request):
 # ==========================
 # Upload + Prediction
 # ==========================
+
+
 def upload(request):
+    
+    print("METHOD:", request.method)
 
     if request.method == "POST":
 
+        print("POST REQUEST RECEIVED")
+
         uploaded_file = request.FILES.get("audio")
+
+        print("Uploaded File:", uploaded_file)
 
         if uploaded_file:
 
-            # Create Upload Folder
+            print("File found")
+
             upload_folder = os.path.join(settings.MEDIA_ROOT, "uploads")
             os.makedirs(upload_folder, exist_ok=True)
 
             save_path = os.path.join(upload_folder, uploaded_file.name)
 
-            # Save uploaded audio
             with open(save_path, "wb+") as destination:
                 for chunk in uploaded_file.chunks():
                     destination.write(chunk)
 
-            # Load Audio
+            print("Saved:", save_path)
+
             audio, sample_rate = librosa.load(save_path, sr=22050)
 
-            # Extract MFCC
             mfcc = librosa.feature.mfcc(
                 y=audio,
                 sr=sample_rate,
@@ -66,46 +75,25 @@ def upload(request):
 
             feature_vector = np.mean(mfcc, axis=1).reshape(1, -1)
 
-            # Predict
             predicted_class = model.predict(feature_vector)[0]
 
-            prediction = label_encoder.inverse_transform(
-                [predicted_class]
-            )[0]
+            prediction = label_encoder.inverse_transform([predicted_class])[0]
 
             probabilities = model.predict_proba(feature_vector)[0]
 
             confidence = round(np.max(probabilities) * 100, 2)
 
-            # Select Icon
-            if prediction == "cat":
-                icon = "emoji-smile"
+            print("Prediction:", prediction)
+            print("Confidence:", confidence)
 
-            elif prediction == "dog":
-                icon = "shield-fill-check"
-
-            elif prediction == "cow":
-                icon = "award-fill"
-
-            else:
-                icon = "question-circle"
-
-            # Data for Template
-            result = {
-                "animal": prediction.title(),
+            return render(request, "predictor/result.html", {
+                "prediction": prediction,
                 "confidence": confidence,
-                "icon": icon,
-                "scientific_name": "Recognized using Random Forest Classifier",
-                "audio_url": settings.MEDIA_URL + "uploads/" + uploaded_file.name,
-            }
+                "uploaded_filename": uploaded_file.name,
+                "animal_image": f"images/{prediction}.jpg",
+            })
 
-            return render(
-                request,
-                "predictor/result.html",
-                {
-                    "result": result
-                }
-            )
+    print("Returning upload page")
 
     return render(request, "predictor/upload.html")
 
@@ -113,8 +101,29 @@ def upload(request):
 # ==========================
 # History Page
 # ==========================
+from .models import PredictionHistory
+
+
 def history(request):
-    return render(request, "predictor/history.html")
+
+    history = PredictionHistory.objects.order_by("-uploaded_at")
+
+    return render(
+        request,
+        "predictor/history.html",
+        {
+            "prediction_history": history,
+            "total_predictions": history.count(),
+            "unique_species": history.values("prediction").distinct().count(),
+            "avg_confidence": round(
+                sum(x.confidence for x in history) / history.count(),
+                2
+            ) if history.count() else 0,
+            "last_upload": history.first().uploaded_at.strftime("%d %b %Y")
+            if history.exists()
+            else "No Upload"
+        }
+    )
 
 
 # ==========================
