@@ -40,7 +40,7 @@ def home(request):
 
 def upload(request):
     
-    print("METHOD:", request.method)
+    
 
     if request.method == "POST":
 
@@ -83,8 +83,7 @@ def upload(request):
 
             confidence = round(np.max(probabilities) * 100, 2)
 
-            print("Prediction:", prediction)
-            print("Confidence:", confidence)
+           
 
             return render(request, "predictor/result.html", {
                 "prediction": prediction,
