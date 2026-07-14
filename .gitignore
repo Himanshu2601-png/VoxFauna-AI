@@ -6,7 +6,6 @@ dataset/processed/
 dataset/processed_segmented/
 dataset/segmented/
 
-*.pkl
 
 .vscode/
 .idea/
