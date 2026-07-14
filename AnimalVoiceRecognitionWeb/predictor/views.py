@@ -81,6 +81,7 @@ def upload(request):
                     samplerate=sample_rate,
                     numcep=40
                 )
+                print("MFCC shape :",mfcc_features.shape)
 
                 feature_vector = np.mean(
                     mfcc_features,
