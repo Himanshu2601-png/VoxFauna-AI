@@ -1,5 +1,6 @@
 from .models import PredictionHistory
 import os
+os.environ["NUMBA_DISABLE_JIT"] = "1"
 import joblib
 import librosa
 import numpy as np
