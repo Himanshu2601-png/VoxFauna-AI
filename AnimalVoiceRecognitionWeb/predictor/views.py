@@ -87,6 +87,7 @@ def upload(request):
                     mfcc_features,
                     axis=0
                 ).reshape(1, -1)
+                print("Featur vector shape:" , feature_vector.shape)
 
                 print("Predicting...")
 
