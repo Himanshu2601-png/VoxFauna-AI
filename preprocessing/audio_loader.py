@@ -1,10 +1,15 @@
-import librosa
+import soundfile as sf
 import numpy as np
 import os
 
+
 def load_audio(path):
     try:
-        audio, sample_rate = librosa.load(path, sr=22050)
+        audio, sample_rate = sf.read(path)
+
+        # Convert stereo to mono
+        if len(audio.shape) > 1:
+            audio = np.mean(audio, axis=1)
 
         print("=" * 40)
         print("Audio Information")

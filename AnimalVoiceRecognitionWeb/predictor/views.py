@@ -1,16 +1,19 @@
-from .models import PredictionHistory
 import os
-os.environ["NUMBA_DISABLE_JIT"] = "1"
 import joblib
-import librosa
 import numpy as np
+import soundfile as sf
+
+from python_speech_features import mfcc
 
 from django.conf import settings
 from django.shortcuts import render
 
+from .models import PredictionHistory
+
 # ==========================
 # Load ML Model
 # ==========================
+
 MODEL_PATH = os.path.join(
     settings.BASE_DIR,
     "ml_models",
@@ -30,6 +33,7 @@ label_encoder = joblib.load(LABEL_PATH)
 # ==========================
 # Home Page
 # ==========================
+
 def home(request):
     return render(request, "predictor/home.html")
 
@@ -38,10 +42,7 @@ def home(request):
 # Upload + Prediction
 # ==========================
 
-
 def upload(request):
-    
-    
 
     if request.method == "POST":
 
@@ -49,11 +50,9 @@ def upload(request):
 
         uploaded_file = request.FILES.get("audio")
 
-        print("Uploaded File:", uploaded_file)
-
         if uploaded_file:
 
-            print("File found")
+            print("Uploaded:", uploaded_file.name)
 
             upload_folder = os.path.join(settings.MEDIA_ROOT, "uploads")
             os.makedirs(upload_folder, exist_ok=True)
@@ -65,51 +64,81 @@ def upload(request):
                     destination.write(chunk)
 
             print("Saved:", save_path)
-            
-            
-            print("Loading audio...")
-            audio, sample_rate = librosa.load(save_path, sr=22050 ,duration=5.0)
-            print("Audio loaded")
 
-            print("Extracting MFCC...")
+            try:
+                print("Loading audio...")
 
-            mfcc = librosa.feature.mfcc(
-                y=audio,
-                sr=sample_rate,
-                n_mfcc=40
-            )
-            print("MFCC extracted")
+                audio, sample_rate = sf.read(save_path)
 
-            feature_vector = np.mean(mfcc, axis=1).reshape(1, -1)
-            print("predicting...")
+                # Stereo -> Mono
+                if len(audio.shape) > 1:
+                    audio = np.mean(audio, axis=1)
 
-            predicted_class = model.predict(feature_vector)[0]
-            print("prediction done")
-            prediction = label_encoder.inverse_transform([predicted_class])[0]
+                print("Extracting MFCC...")
 
-            probabilities = model.predict_proba(feature_vector)[0]
+                mfcc_features = mfcc(
+                    signal=audio,
+                    samplerate=sample_rate,
+                    numcep=40
+                )
 
-            confidence = round(np.max(probabilities) * 100, 2)
+                feature_vector = np.mean(
+                    mfcc_features,
+                    axis=0
+                ).reshape(1, -1)
 
-           
+                print("Predicting...")
 
-            return render(request, "predictor/result.html", {
-                "prediction": prediction,
-                "confidence": confidence,
-                "uploaded_filename": uploaded_file.name,
-                "animal_image": f"images/{prediction}.jpg",
-            })
+                predicted_class = model.predict(feature_vector)[0]
 
-    print("Returning upload page")
+                prediction = label_encoder.inverse_transform(
+                    [predicted_class]
+                )[0]
+
+                probabilities = model.predict_proba(feature_vector)[0]
+
+                confidence = round(
+                    np.max(probabilities) * 100,
+                    2
+                )
+
+                print("Prediction:", prediction)
+
+                # Save history
+                PredictionHistory.objects.create(
+                    filename=uploaded_file.name,
+                    prediction=prediction,
+                    confidence=confidence
+                )
+
+                return render(
+                    request,
+                    "predictor/result.html",
+                    {
+                        "prediction": prediction,
+                        "confidence": confidence,
+                        "uploaded_filename": uploaded_file.name,
+                        "animal_image": f"images/{prediction}.jpg",
+                    }
+                )
+
+            except Exception as e:
+                print("ERROR:", e)
+
+                return render(
+                    request,
+                    "predictor/upload.html",
+                    {
+                        "error": str(e)
+                    }
+                )
 
     return render(request, "predictor/upload.html")
 
 
 # ==========================
-# History Page
+# History
 # ==========================
-from .models import PredictionHistory
-
 
 def history(request):
 
@@ -121,20 +150,23 @@ def history(request):
         {
             "prediction_history": history,
             "total_predictions": history.count(),
-            "unique_species": history.values("prediction").distinct().count(),
+            "unique_species": history.values(
+                "prediction"
+            ).distinct().count(),
             "avg_confidence": round(
                 sum(x.confidence for x in history) / history.count(),
                 2
             ) if history.count() else 0,
             "last_upload": history.first().uploaded_at.strftime("%d %b %Y")
             if history.exists()
-            else "No Upload"
-        }
+            else "No Upload",
+        },
     )
 
 
 # ==========================
-# About Page
+# About
 # ==========================
+
 def about(request):
     return render(request, "predictor/about.html")
