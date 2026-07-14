@@ -64,19 +64,26 @@ def upload(request):
                     destination.write(chunk)
 
             print("Saved:", save_path)
+            
+            
+            print("Loading audio...")
+            audio, sample_rate = librosa.load(save_path, sr=22050 ,duration=5.0)
+            print("Audio loaded")
 
-            audio, sample_rate = librosa.load(save_path, sr=22050)
+            print("Extracting MFCC...")
 
             mfcc = librosa.feature.mfcc(
                 y=audio,
                 sr=sample_rate,
                 n_mfcc=40
             )
+            print("MFCC extracted")
 
             feature_vector = np.mean(mfcc, axis=1).reshape(1, -1)
+            print("predicting...")
 
             predicted_class = model.predict(feature_vector)[0]
-
+            print("prediction done")
             prediction = label_encoder.inverse_transform([predicted_class])[0]
 
             probabilities = model.predict_proba(feature_vector)[0]
