@@ -1,1 +1,1 @@
-web: gunicorn AnimalVoiceRecognitionWeb.wsgi
+web: gunicorn AnimalVoiceRecognitionWeb.wsgi:application
