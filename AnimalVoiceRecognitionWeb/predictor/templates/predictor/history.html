@@ -98,3 +98,28 @@
   </div>
 </section>
 {% endblock %}
+{% block extra_scripts %}
+<script>
+  const searchInput = document.getElementById("historySearchInput");
+  const rows = document.querySelectorAll(".history-row");
+  const emptyState = document.getElementById("historyEmptyState");
+
+  if (searchInput) {
+    searchInput.addEventListener("input", function () {
+      const query = this.value.trim().toLowerCase();
+      let visibleCount = 0;
+
+      rows.forEach((row) => {
+        const text = row.innerText.toLowerCase();
+        const matches = text.includes(query);
+        row.classList.toggle("filtered-out", !matches);
+        if (matches) visibleCount++;
+      });
+
+      if (emptyState) {
+        emptyState.classList.toggle("d-none", visibleCount !== 0 || rows.length === 0);
+      }
+    });
+  }
+</script>
+{% endblock %}

@@ -128,16 +128,30 @@ removeBtn.addEventListener("click", function () {
 // Drag over
 dropzone.addEventListener("dragover", function(e){
     e.preventDefault();
+    dropzone.classList.add("dz-drag");
+});
+
+// Drag leave
+dropzone.addEventListener("dragleave", function(e){
+    dropzone.classList.remove("dz-drag");
 });
 
 // Drop file
 dropzone.addEventListener("drop", function(e){
 
     e.preventDefault();
+    dropzone.classList.remove("dz-drag");
 
     fileInput.files = e.dataTransfer.files;
 
     fileInput.dispatchEvent(new Event("change"));
+});
+
+// Show a brief loading state on submit so it's clear a prediction is running
+const uploadForm = document.getElementById("uploadForm");
+uploadForm.addEventListener("submit", function () {
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status"></span> Analyzing audio...';
 });
 </script>
 {% endblock %}
