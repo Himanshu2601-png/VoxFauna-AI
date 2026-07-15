@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 import soundfile as sf
 
-from python_speech_features import mfcc
+import librosa
 
 from django.conf import settings
 from django.shortcuts import render
@@ -76,16 +76,16 @@ def upload(request):
 
                 print("Extracting MFCC...")
 
-                mfcc_features = mfcc(
-                    signal=audio,
-                    samplerate=sample_rate,
-                    numcep=40
+                mfcc_features = librosa.feature.mfcc(
+                    y=audio.astype(np.float32),
+                    sr=sample_rate,
+                    n_mfcc=40
                 )
                 print("MFCC shape :",mfcc_features.shape)
 
                 feature_vector = np.mean(
                     mfcc_features,
-                    axis=0
+                    axis=1
                 ).reshape(1, -1)
                 print("Featur vector shape:" , feature_vector.shape)
 
